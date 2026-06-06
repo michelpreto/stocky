@@ -8,7 +8,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
-      <AppSidebar activeHref="/" />
+      <div className="hidden lg:block">
+        <AppSidebar activeHref="/" />
+      </div>
       <div className="flex flex-col flex-1 min-w-0">
         <DashboardHeader alertCount={criticalCount} />
         <main className="flex-1 overflow-hidden">

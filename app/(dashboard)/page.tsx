@@ -20,8 +20,7 @@ export default function DashboardPage() {
 
       {/* KPI ROW */}
       <div
-        className="grid gap-2.5 flex-shrink-0"
-        style={{ gridTemplateColumns: 'repeat(4, 1fr) 88px' }}
+        className="grid grid-cols-2 lg:grid-cols-[repeat(4,1fr)_88px] gap-2.5 flex-shrink-0"
       >
         <KpiCard
           label="Valor em estoque"
@@ -50,13 +49,14 @@ export default function DashboardPage() {
           icon={<ArrowLeftRight size={13} />}
           valueColor="text-warning"
         />
-        <DonutMini categories={mockCategories} />
+        <div className="col-span-2 lg:col-span-1">
+          <DonutMini categories={mockCategories} />
+        </div>
       </div>
 
       {/* MAIN GRID */}
       <div
-        className="grid gap-2.5 flex-1 min-h-0"
-        style={{ gridTemplateColumns: '1fr 1fr 260px' }}
+        className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_260px] gap-2.5 flex-1 min-h-0 overflow-auto xl:overflow-hidden"
       >
         <MonthlyConsumptionChart data={mockMonthlyData} />
         <MovementsTable movements={mockMovements} />
