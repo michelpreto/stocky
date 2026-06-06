@@ -16,7 +16,7 @@ export function ProductsPagination({ page, pageSize, total, onPageChange, onPage
 
   return (
     <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-      <span>{total === 0 ? '0 itens' : `${from}–${to} de ${total}`}</span>
+      <span>{total === 0 ? '0 itens' : <><span className="font-mono">{from}–{to}</span> de <span className="font-mono">{total}</span></>}</span>
       <div className="flex items-center gap-2">
         <select
           value={pageSize}
@@ -35,7 +35,7 @@ export function ProductsPagination({ page, pageSize, total, onPageChange, onPage
         >
           <ChevronLeft size={13} />
         </button>
-        <span className="min-w-[60px] text-center">
+        <span className="min-w-[60px] text-center font-mono">
           {page} / {totalPages}
         </span>
         <button

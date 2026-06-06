@@ -25,16 +25,16 @@ export function ProductsSummary({ total, filtered }: Props) {
     <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
       <span>
         {filtered.length < total
-          ? `${filtered.length} de ${total} produtos`
-          : `${total} produtos`}
+          ? <><span className="font-mono">{filtered.length}</span> de <span className="font-mono">{total}</span> produtos</>
+          : <><span className="font-mono">{total}</span> produtos</>}
       </span>
       {counts.criticos > 0 && (
-        <span className="text-danger font-medium">
+        <span className="text-danger font-medium font-mono">
           {counts.criticos} crítico{counts.criticos > 1 ? 's' : ''}
         </span>
       )}
       {counts.baixo > 0 && (
-        <span className="text-warning font-medium">
+        <span className="text-warning font-medium font-mono">
           {counts.baixo} baixo estoque
         </span>
       )}
