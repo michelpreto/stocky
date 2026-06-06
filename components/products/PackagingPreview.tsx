@@ -11,7 +11,7 @@ const LABELS: Record<TipoEmbalagem, string> = {
 const LABELS_PLURAL: Record<TipoEmbalagem, string> = {
   FARDO:   'fardos',   GALAO:   'galões',   CAIXA:   'caixas',
   PACOTE:  'pacotes',  PAR:     'pares',    UNIDADE: 'unidades',
-  ROLO:    'rolos',    SACO:    'sacos',    BISNAGA: 'bisnagras',
+  ROLO:    'rolos',    SACO:    'sacos',    BISNAGA: 'bisnagas',
   FRASCO:  'frascos',
 }
 
