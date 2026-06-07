@@ -130,7 +130,7 @@ DATABASE_URL=postgresql://almox:<senha>@postgres:5432/almoxcontrol
 
 # Next.js
 NEXTAUTH_SECRET=<gerado: openssl rand -base64 32>
-NEXTAUTH_URL=https://almox.seudominio.com.br
+NEXTAUTH_URL=https://stocky.mpmserver.com.br
 NODE_ENV=production
 
 # Cloudflare Tunnel
@@ -147,10 +147,10 @@ CLOUDFLARE_TUNNEL_TOKEN=<obtido no Zero Trust dashboard>
 2. Tipo: **Cloudflared** → dar um nome (ex: `almoxcontrol-home`)
 3. Copiar o token gerado → colocar em `CLOUDFLARE_TUNNEL_TOKEN` no `.env`
 4. Em **Public Hostname**:
-   - Subdomain: `almox` (ou o que preferir)
-   - Domain: `seudominio.com.br`
+   - Subdomain: `stocky`
+   - Domain: `mpmserver.com.br`
    - Service: `http://app:3000`
-5. Salvar — o Cloudflare cria automaticamente o registro DNS `CNAME` apontando para o túnel
+5. Salvar — o Cloudflare cria automaticamente o registro DNS `CNAME` `stocky.mpmserver.com.br` apontando para o túnel
 
 ---
 
@@ -243,7 +243,35 @@ export default nextConfig
 
 ## 11. Pré-requisitos no servidor Zima OS
 
-- Docker + Docker Compose instalados (padrão no Zima OS)
-- Git instalado (`apt install git` ou via interface Zima)
-- Acesso SSH ao servidor
-- Conta Cloudflare com domínio adicionado e plano Free ativo
+Os itens abaixo precisam ser instalados/configurados antes do deploy:
+
+### 11.1 Acesso SSH
+
+Zima OS expõe SSH por padrão. Credenciais padrão:
+- Usuário: `casaos` (ou `root` dependendo da versão)
+- Porta: `22`
+- Descobrir o IP: verificar no painel do Zima OS ou no roteador
+
+### 11.2 Docker + Docker Compose
+
+Zima OS inclui Docker, mas pode não ter o plugin `compose` v2. Verificar e instalar se necessário:
+
+```bash
+# Verificar versão
+docker compose version
+
+# Se não tiver, instalar o plugin
+apt-get update && apt-get install -y docker-compose-plugin
+```
+
+### 11.3 Git
+
+```bash
+apt-get update && apt-get install -y git
+```
+
+### 11.4 Cloudflare
+
+- Conta Cloudflare com `mpmserver.com.br` adicionado
+- Plano Free ativo
+- Acesso ao painel Zero Trust (free.cloudflare.com → Zero Trust)
