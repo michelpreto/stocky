@@ -78,6 +78,8 @@ model User {
 
   organization Organization   @relation(fields: [organizationId], references: [id])
   movements    StockMovement[]
+
+  @@index([organizationId])
 }
 
 model Warehouse {
@@ -92,6 +94,8 @@ model Warehouse {
   organization      Organization       @relation(fields: [organizationId], references: [id])
   productWarehouses ProductWarehouse[]
   movements         StockMovement[]
+
+  @@index([organizationId])
 }
 
 model Category {
@@ -104,6 +108,8 @@ model Category {
 
   organization Organization @relation(fields: [organizationId], references: [id])
   products     Product[]
+
+  @@index([organizationId])
 }
 
 model Product {
@@ -128,6 +134,10 @@ model Product {
   category          Category           @relation(fields: [categoryId], references: [id])
   productWarehouses ProductWarehouse[]
   movements         StockMovement[]
+
+  @@index([organizationId])
+  @@index([organizationId, ativo])
+  @@index([categoryId])
 }
 
 model ProductWarehouse {
@@ -138,6 +148,7 @@ model ProductWarehouse {
   estoqueMaximo  Float?
   pontoReposicao Float?
   localizacao    String?
+  updatedAt      DateTime @updatedAt
 
   product   Product   @relation(fields: [productId], references: [id])
   warehouse Warehouse @relation(fields: [warehouseId], references: [id])
@@ -162,4 +173,10 @@ model StockMovement {
   warehouse    Warehouse    @relation(fields: [warehouseId], references: [id])
   user         User         @relation(fields: [userId], references: [id])
   organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId])
+  @@index([organizationId, tipo, createdAt])
+  @@index([productId])
+  @@index([warehouseId])
+  @@index([userId])
 }
