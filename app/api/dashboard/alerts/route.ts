@@ -15,13 +15,13 @@ export async function GET() {
 
   const alerts = pws
     .filter((pw) => pw.estoqueAtual < pw.estoqueMinimo)
-    .map((pw, i) => {
+    .map((pw) => {
       const pct = pw.estoqueMinimo > 0 ? pw.estoqueAtual / pw.estoqueMinimo : 0
       const severidade = pw.estoqueAtual === 0 ? 'CRITICO'
         : pct < 0.5 ? 'CRITICO'
         : 'ALERTA'
       return {
-        id:        `alert-${i}`,
+        id:        `${pw.productId}-${pw.warehouseId}`,
         severidade,
         mensagem:  pw.estoqueAtual === 0
           ? `${pw.product.nome} — zerado`
