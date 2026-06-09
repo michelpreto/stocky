@@ -49,10 +49,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const { estoqueMinimo, estoqueMaximo, localizacao, ...productFields } = parsed.data
 
-  const warehouse = await db.warehouse.findFirst({ where: { organizationId, ativo: true } })
+  const warehouse = await db.warehouse.findFirst({ where: { organizationId, ativo: true }, orderBy: { createdAt: 'asc' } })
+  const hasStockFields = estoqueMinimo !== undefined || estoqueMaximo !== undefined || localizacao !== undefined
+  if (hasStockFields && !warehouse) {
+    return NextResponse.json({ error: 'No active warehouse found for stock update' }, { status: 404 })
+  }
 
   const product = await db.product.update({
-    where: { id },
+    where: { id, organizationId },
     data:  {
       ...productFields,
       ...(warehouse && (estoqueMinimo !== undefined || estoqueMaximo !== undefined || localizacao !== undefined)
@@ -61,7 +65,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
               upsert: {
                 where:  { productId_warehouseId: { productId: id, warehouseId: warehouse.id } },
                 update: { estoqueMinimo, estoqueMaximo, localizacao },
-                create: { warehouseId: warehouse.id, estoqueAtual: 0, estoqueMinimo: estoqueMinimo ?? 0 },
+                create: { warehouseId: warehouse!.id, estoqueAtual: 0, estoqueMinimo: estoqueMinimo ?? 0, estoqueMaximo, localizacao },
               },
             },
           }

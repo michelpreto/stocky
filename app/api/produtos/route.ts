@@ -67,7 +67,7 @@ export async function POST(req: Request) {
   const cat = await db.category.findFirst({ where: { id: productData.categoryId, organizationId } })
   if (!cat) return NextResponse.json({ error: 'Category not found' }, { status: 404 })
 
-  const warehouse = await db.warehouse.findFirst({ where: { organizationId, ativo: true } })
+  const warehouse = await db.warehouse.findFirst({ where: { organizationId, ativo: true }, orderBy: { createdAt: 'asc' } })
   if (!warehouse) return NextResponse.json({ error: 'No warehouse found' }, { status: 404 })
 
   const product = await db.product.create({

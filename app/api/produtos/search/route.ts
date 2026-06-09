@@ -8,8 +8,7 @@ export async function GET(req: Request) {
   const { organizationId } = session.user
 
   const { searchParams } = new URL(req.url)
-  const q           = searchParams.get('q') ?? ''
-  const warehouseId = searchParams.get('warehouseId') ?? ''
+  const q = searchParams.get('q') ?? ''
 
   if (q.length < 2) return NextResponse.json([])
 
@@ -25,7 +24,7 @@ export async function GET(req: Request) {
     },
     include: {
       category:          { select: { nome: true } },
-      productWarehouses: warehouseId ? { where: { warehouseId } } : true,
+      productWarehouses: true,
     },
     take: 20,
   })
