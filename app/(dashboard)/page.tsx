@@ -1,4 +1,5 @@
 // app/(dashboard)/page.tsx
+import { cookies } from 'next/headers'
 import { KpiCard }                 from '@/components/dashboard/KpiCard'
 import { DonutMini }               from '@/components/dashboard/DonutMini'
 import { MonthlyConsumptionChart } from '@/components/dashboard/MonthlyConsumptionChart'
@@ -7,21 +8,45 @@ import { CriticalItemsList }       from '@/components/dashboard/CriticalItemsLis
 import { MovementsTable }          from '@/components/dashboard/MovementsTable'
 import { DollarSign, Package, AlertTriangle, ArrowLeftRight } from 'lucide-react'
 import { formatCurrency, formatNumber, formatDelta } from '@/lib/format'
-import {
-  mockKpi, mockCategories, mockMonthlyData,
-  mockAlerts, mockCriticalItems, mockMovements,
-} from '@/lib/mock-data/dashboard'
+import { mockCategories } from '@/lib/mock-data/dashboard'
 
-export default function DashboardPage() {
-  const { valorEstoque, itensCadastrados, itensAbaixoMinimo, saidasHoje, deltas } = mockKpi
+async function fetchDashboard(path: string, cookieHeader: string) {
+  const baseUrl = process.env.NEXTAUTH_URL ?? 'http://localhost:3000'
+  const res = await fetch(`${baseUrl}/api/dashboard/${path}`, {
+    cache:   'no-store',
+    headers: { cookie: cookieHeader },
+  })
+  if (!res.ok) return null
+  return res.json()
+}
+
+export default async function DashboardPage() {
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore.toString()
+
+  const [kpi, movements, alerts, criticalItems, monthlyData] = await Promise.all([
+    fetchDashboard('kpis',                cookieHeader),
+    fetchDashboard('movements',           cookieHeader),
+    fetchDashboard('alerts',              cookieHeader),
+    fetchDashboard('critical-items',      cookieHeader),
+    fetchDashboard('monthly-consumption', cookieHeader),
+  ])
+
+  const { valorEstoque, itensCadastrados, itensAbaixoMinimo, saidasHoje, deltas } = kpi ?? {
+    valorEstoque: 0, itensCadastrados: 0, itensAbaixoMinimo: 0, saidasHoje: 0,
+    deltas: {
+      valorEstoque:      { value: 0, direction: 'neutral' },
+      itensCadastrados:  { value: 0, direction: 'neutral' },
+      itensAbaixoMinimo: { value: 0, direction: 'neutral' },
+      saidasHoje:        { value: 0, direction: 'neutral' },
+    },
+  }
 
   return (
     <div className="h-full p-3.5 flex flex-col gap-3 overflow-hidden">
 
       {/* KPI ROW */}
-      <div
-        className="grid grid-cols-2 lg:grid-cols-[repeat(4,1fr)_88px] gap-2.5 flex-shrink-0"
-      >
+      <div className="grid grid-cols-2 lg:grid-cols-[repeat(4,1fr)_88px] gap-2.5 flex-shrink-0">
         <KpiCard
           label="Valor em estoque"
           value={formatCurrency(valorEstoque)}
@@ -55,14 +80,12 @@ export default function DashboardPage() {
       </div>
 
       {/* MAIN GRID */}
-      <div
-        className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_260px] gap-2.5 flex-1 min-h-0 overflow-auto xl:overflow-hidden"
-      >
-        <MonthlyConsumptionChart data={mockMonthlyData} />
-        <MovementsTable movements={mockMovements} />
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_260px] gap-2.5 flex-1 min-h-0 overflow-auto xl:overflow-hidden">
+        <MonthlyConsumptionChart data={monthlyData ?? []} />
+        <MovementsTable movements={movements ?? []} />
         <div className="flex flex-col gap-2.5 overflow-hidden">
-          <AlertList alerts={mockAlerts} />
-          <CriticalItemsList items={mockCriticalItems} />
+          <AlertList alerts={alerts ?? []} />
+          <CriticalItemsList items={criticalItems ?? []} />
         </div>
       </div>
 
