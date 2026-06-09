@@ -19,10 +19,14 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Run as non-root user (node user exists in node:22-alpine)
 USER node
 
-# Copia apenas o output standalone
+# Copia output standalone + assets
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 COPY --from=builder --chown=node:node /app/public ./public
+
+# Copia prisma para migrations e config
+COPY --from=builder --chown=node:node /app/prisma ./prisma
+COPY --from=builder --chown=node:node /app/prisma.config.ts ./prisma.config.ts
 
 EXPOSE 3000
 ENV PORT=3000
