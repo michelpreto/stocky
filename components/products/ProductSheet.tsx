@@ -28,6 +28,7 @@ interface Props {
   categories: Category[]
   onClose: () => void
   onSave: (data: ProductFormValues) => Promise<void>
+  saveError?: string | null
 }
 
 function FieldError({ message }: { message?: string }) {
@@ -43,7 +44,7 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
   )
 }
 
-export function ProductSheet({ open, product, categories, onClose, onSave }: Props) {
+export function ProductSheet({ open, product, categories, onClose, onSave, saveError }: Props) {
   const isNew = product === null
 
   const {
@@ -120,7 +121,7 @@ export function ProductSheet({ open, product, categories, onClose, onSave }: Pro
               <TabsTrigger value="geral" className={cn(errors.nome || errors.categoryId ? 'relative after:absolute after:top-1 after:right-1 after:w-1.5 after:h-1.5 after:bg-danger after:rounded-full' : '')}>
                 Dados Gerais
               </TabsTrigger>
-              <TabsTrigger value="estoque">Estoque</TabsTrigger>
+              <TabsTrigger value="estoque" className={cn(errors.estoqueAtual || errors.estoqueMinimo || errors.estoqueMaximo || errors.custoUnitario ? 'relative after:absolute after:top-1 after:right-1 after:w-1.5 after:h-1.5 after:bg-danger after:rounded-full' : '')}>Estoque</TabsTrigger>
               <TabsTrigger value="embalagem" className={cn(errors.tipoEmbalagem || errors.fatorEmbalagem ? 'relative after:absolute after:top-1 after:right-1 after:w-1.5 after:h-1.5 after:bg-danger after:rounded-full' : '')}>
                 Embalagem
               </TabsTrigger>
@@ -197,7 +198,7 @@ export function ProductSheet({ open, product, categories, onClose, onSave }: Pro
                   <div>
                     <FieldLabel>Estoque Máximo</FieldLabel>
                     <Input
-                      {...register('estoqueMaximo', { valueAsNumber: true })}
+                      {...register('estoqueMaximo', { setValueAs: (v) => v === '' || v === null ? undefined : Number(v) })}
                       type="number" min="0" step="0.001"
                       className="bg-card font-mono"
                     />
@@ -205,7 +206,7 @@ export function ProductSheet({ open, product, categories, onClose, onSave }: Pro
                   <div>
                     <FieldLabel>Ponto de Reposição</FieldLabel>
                     <Input
-                      {...register('pontoReposicao', { valueAsNumber: true })}
+                      {...register('pontoReposicao', { setValueAs: (v) => v === '' || v === null ? undefined : Number(v) })}
                       type="number" min="0" step="0.001"
                       className="bg-card font-mono"
                     />
@@ -214,7 +215,7 @@ export function ProductSheet({ open, product, categories, onClose, onSave }: Pro
                 <div>
                   <FieldLabel>Custo Unitário (R$)</FieldLabel>
                   <Input
-                    {...register('custoUnitario', { valueAsNumber: true })}
+                    {...register('custoUnitario', { setValueAs: (v) => v === '' || v === null ? undefined : Number(v) })}
                     type="number" min="0" step="0.01"
                     placeholder="0,00"
                     className="bg-card font-mono"
@@ -306,7 +307,11 @@ export function ProductSheet({ open, product, categories, onClose, onSave }: Pro
             </div>
           </Tabs>
 
-          <SheetFooter className="px-5 py-4 border-t border-border flex-shrink-0 flex-row justify-end gap-2">
+          <SheetFooter className="px-5 py-4 border-t border-border flex-shrink-0 flex-col gap-2">
+            {saveError && (
+              <p className="text-[11px] text-danger text-right">{saveError}</p>
+            )}
+            <div className="flex justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
@@ -330,6 +335,7 @@ export function ProductSheet({ open, product, categories, onClose, onSave }: Pro
               {isSubmitting && <Loader2 size={12} className="animate-spin" />}
               Salvar Produto
             </button>
+            </div>
           </SheetFooter>
         </form>
       </SheetContent>

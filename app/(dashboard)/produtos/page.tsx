@@ -35,6 +35,7 @@ export default function ProductsPage() {
   const [products,   setProducts]   = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading,    setLoading]    = useState(true)
+  const [saveError,  setSaveError]  = useState<string | null>(null)
   const [state, setState] = useState<PageState>({
     filter: DEFAULT_FILTER,
     page: 1, pageSize: 25,
@@ -72,27 +73,36 @@ export default function ProductsPage() {
     setState(s => ({ ...s, filter: { ...s.filter, ...patch }, page: 1 }))
   }, [])
 
-  function openNew()                { setState(s => ({ ...s, sheetOpen: true, editingProduct: null })) }
-  function openEdit(p: Product)     { setState(s => ({ ...s, sheetOpen: true, editingProduct: p })) }
-  function closeSheet()             { setState(s => ({ ...s, sheetOpen: false, editingProduct: null })) }
+  function openNew()                { setSaveError(null); setState(s => ({ ...s, sheetOpen: true, editingProduct: null })) }
+  function openEdit(p: Product)     { setSaveError(null); setState(s => ({ ...s, sheetOpen: true, editingProduct: p })) }
+  function closeSheet()             { setSaveError(null); setState(s => ({ ...s, sheetOpen: false, editingProduct: null })) }
   function clearFilter(key: string) { setFilter({ [key]: '' } as Partial<FilterState>) }
 
   async function handleSave(data: ProductFormValues) {
+    setSaveError(null)
     const method = state.editingProduct ? 'PATCH' : 'POST'
     const url    = state.editingProduct
       ? `/api/produtos/${state.editingProduct.id}`
       : '/api/produtos'
 
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    })
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
 
-    if (res.ok) {
-      const updated = await fetch('/api/produtos').then(r => r.json())
-      setProducts(updated.map((p: any) => ({ ...p, warehouse: p.productWarehouses?.[0] ?? null })))
-      closeSheet()
+      if (res.ok) {
+        const updated = await fetch('/api/produtos').then(r => r.json())
+        setProducts(updated.map((p: any) => ({ ...p, warehouse: p.productWarehouses?.[0] ?? null })))
+        closeSheet()
+      } else {
+        const body = await res.json().catch(() => ({}))
+        const msg  = body?.details?.[0]?.message ?? body?.error ?? `Erro ${res.status}`
+        setSaveError(msg)
+      }
+    } catch {
+      setSaveError('Erro de conexão. Tente novamente.')
     }
   }
 
@@ -131,6 +141,7 @@ export default function ProductsPage() {
         categories={categories}
         onClose={closeSheet}
         onSave={handleSave}
+        saveError={saveError}
       />
     </div>
   )
