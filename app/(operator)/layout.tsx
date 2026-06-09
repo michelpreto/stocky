@@ -1,6 +1,11 @@
 // app/(operator)/layout.tsx
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 
-export default function OperatorLayout({ children }: { children: React.ReactNode }) {
+export default async function OperatorLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth()
+  if (!session) redirect('/login')
+
   return (
     <div className="flex flex-col h-screen bg-background overflow-hidden">
       {/* Top bar */}

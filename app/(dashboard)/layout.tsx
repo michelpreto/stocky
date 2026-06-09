@@ -2,8 +2,13 @@
 import { AppSidebar } from '@/components/dashboard/AppSidebar'
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 import { mockAlerts } from '@/lib/mock-data/dashboard'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth()
+  if (!session) redirect('/login')
+
   const criticalCount = mockAlerts.filter((a) => a.severidade === 'CRITICO').length
 
   return (
