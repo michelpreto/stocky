@@ -6,7 +6,7 @@ import { z } from 'zod'
 const schema = z.object({
   productId:   z.string().cuid(),
   warehouseId: z.string(),
-  tipo:        z.enum(['ENTRADA', 'SAIDA', 'AJUSTE', 'TRANSFERENCIA']),
+  tipo:        z.enum(['ENTRADA', 'SAIDA', 'AJUSTE']),
   quantidade:  z.number().positive(),
   observacao:  z.string().max(200).optional(),
 })
@@ -23,6 +23,14 @@ export async function POST(req: Request) {
 
   const { productId, warehouseId, tipo, quantidade, observacao } = parsed.data
   const { organizationId, id: userId } = session.user
+
+  // Verify warehouse belongs to this org
+  const warehouse = await db.warehouse.findFirst({
+    where: { id: warehouseId, organizationId },
+  })
+  if (!warehouse) {
+    return NextResponse.json({ error: 'Almoxarifado não encontrado' }, { status: 404 })
+  }
 
   try {
     const movement = await db.$transaction(async (tx) => {

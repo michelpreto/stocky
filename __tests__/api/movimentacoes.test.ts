@@ -4,34 +4,29 @@ vi.mock('@/auth', () => ({
   auth: vi.fn(),
 }))
 
+const mockTxUpdate = vi.fn()
+const mockTxCreate = vi.fn().mockResolvedValue({
+  id:            'mov-1',
+  tipo:          'SAIDA',
+  quantidade:    -3,
+  estoqueAntes:  10,
+  estoqueDepois: 7,
+})
+const mockTxFindUnique = vi.fn().mockResolvedValue({
+  productId:     'prod-1',
+  warehouseId:   'wh-1',
+  estoqueAtual:  10,
+  estoqueMinimo: 5,
+})
+
 vi.mock('@/lib/db', () => ({
   db: {
-    productWarehouse: {
-      findUnique: vi.fn(),
-      update:     vi.fn(),
-    },
-    stockMovement: {
-      create: vi.fn(),
+    warehouse: {
+      findFirst: vi.fn().mockResolvedValue({ id: 'wh-1', organizationId: 'org-1' }),
     },
     $transaction: vi.fn(async (fn: Function) => fn({
-      productWarehouse: {
-        findUnique: vi.fn().mockResolvedValue({
-          productId:     'prod-1',
-          warehouseId:   'wh-1',
-          estoqueAtual:  10,
-          estoqueMinimo: 5,
-        }),
-        update: vi.fn(),
-      },
-      stockMovement: {
-        create: vi.fn().mockResolvedValue({
-          id:            'mov-1',
-          tipo:          'SAIDA',
-          quantidade:    -3,
-          estoqueAntes:  10,
-          estoqueDepois: 7,
-        }),
-      },
+      productWarehouse: { findUnique: mockTxFindUnique, update: mockTxUpdate },
+      stockMovement:    { create: mockTxCreate },
     })),
   },
 }))
@@ -89,5 +84,8 @@ describe('POST /api/movimentacoes', () => {
     expect(res.status).toBe(201)
     const body = await res.json()
     expect(body.tipo).toBe('SAIDA')
+    expect(mockTxUpdate).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ estoqueAtual: 7 }),
+    }))
   })
 })
