@@ -1,4 +1,7 @@
-import "dotenv/config"
+// Load .env in dev/test; in production DATABASE_URL comes from Docker env
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv/config')
+}
 import { defineConfig } from "prisma/config";
 
 export default defineConfig({
