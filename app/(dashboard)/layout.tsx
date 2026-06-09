@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation'
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   if (!session) redirect('/login')
+  if (session.user.role === 'OPERATOR') redirect('/baixa')
 
   const criticalCount = mockAlerts.filter((a) => a.severidade === 'CRITICO').length
 

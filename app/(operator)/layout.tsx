@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 export default async function OperatorLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   if (!session) redirect('/login')
+  if (session.user.role !== 'OPERATOR') redirect('/')
 
   return (
     <div className="flex flex-col h-screen bg-background overflow-hidden">
