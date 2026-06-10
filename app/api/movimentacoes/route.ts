@@ -3,6 +3,44 @@ import { auth } from '@/auth'
 import { db } from '@/lib/db'
 import { z } from 'zod'
 
+export async function GET(req: Request) {
+  const session = await auth()
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { organizationId } = session.user
+
+  const { searchParams } = new URL(req.url)
+  const q     = searchParams.get('q') ?? ''
+  const tipo  = searchParams.get('tipo') ?? ''
+  const page  = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '25', 10)))
+  const skip  = (page - 1) * limit
+
+  const where: any = { organizationId }
+  if (tipo && ['ENTRADA', 'SAIDA', 'AJUSTE', 'TRANSFERENCIA'].includes(tipo)) {
+    where.tipo = tipo
+  }
+  if (q) {
+    where.product = { nome: { contains: q, mode: 'insensitive' } }
+  }
+
+  const [items, total] = await Promise.all([
+    db.stockMovement.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        product:   { select: { id: true, nome: true, unidadeConsumo: true } },
+        user:      { select: { id: true, nome: true } },
+        warehouse: { select: { id: true, nome: true } },
+      },
+    }),
+    db.stockMovement.count({ where }),
+  ])
+
+  return NextResponse.json({ items, total, page, limit })
+}
+
 const schema = z.object({
   productId:   z.string().cuid(),
   warehouseId: z.string(),
