@@ -175,7 +175,7 @@ export default function RelatoriosPage() {
                   <td colSpan={2} className="px-3 py-8 text-center text-[12px] text-muted-foreground">Sem dados de consumo</td>
                 </tr>
               ) : monthly.slice(-6).map(row => (
-                <tr key={row.month} className="border-t border-border hover:bg-surface-elevated transition-colors">
+                <tr key={row.month} className="border-t border-border">
                   <td className="px-3 py-2 text-[12px] text-foreground">{row.month}</td>
                   <td className="px-3 py-2 text-[12px] text-foreground font-mono tabular-nums">{row.unidades.toLocaleString('pt-BR')}</td>
                 </tr>
@@ -283,7 +283,7 @@ export default function RelatoriosPage() {
                   <td colSpan={6} className="px-3 py-8 text-center text-[12px] text-muted-foreground">Nenhuma movimentação</td>
                 </tr>
               ) : recentMovs.map(item => (
-                <tr key={item.id} className="border-t border-border hover:bg-surface-elevated transition-colors">
+                <tr key={item.id} className="border-t border-border">
                   <td className="px-3 py-2 text-[12px] text-foreground whitespace-nowrap">
                     {new Date(item.createdAt).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                   </td>
