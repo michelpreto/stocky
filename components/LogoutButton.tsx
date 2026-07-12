@@ -15,13 +15,14 @@ export function LogoutButton({ className }: Props) {
       <button
         type="submit"
         title="Sair"
+        aria-label="Sair"
         className={cn(
-          'h-7 px-2.5 rounded-lg border border-border text-[11px] text-foreground hover:border-slate-600 hover:bg-surface-elevated transition-colors cursor-pointer flex items-center gap-1.5',
+          'h-7 px-2.5 rounded-lg border border-border text-[11px] text-foreground hover:border-slate-600 hover:bg-surface-elevated transition-colors cursor-pointer flex items-center gap-1.5 flex-shrink-0',
           className
         )}
       >
         <LogOut className="w-3 h-3" />
-        Sair
+        <span className="hidden sm:inline">Sair</span>
       </button>
     </form>
   )

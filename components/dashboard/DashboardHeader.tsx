@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import { Bell } from 'lucide-react'
 import { WarehouseSelector } from './WarehouseSelector'
+import { MobileNav } from './MobileNav'
 import { LogoutButton } from '@/components/LogoutButton'
 import { mockWarehouses } from '@/lib/mock-data/dashboard'
 import type { Warehouse } from '@/types/dashboard'
@@ -23,9 +24,10 @@ export function DashboardHeader({
 
   return (
     <header className="h-11 bg-card border-b border-border flex items-center px-4 gap-2.5 flex-shrink-0">
+      <MobileNav />
       <span className="text-sm font-semibold text-foreground">{title}</span>
-      <span className="w-px h-4 bg-border" />
-      <span className="text-xs text-muted-foreground">{breadcrumb}</span>
+      <span className="hidden lg:block w-px h-4 bg-border" />
+      <span className="hidden lg:block text-xs text-muted-foreground">{breadcrumb}</span>
       <div className="flex-1" />
 
       <WarehouseSelector

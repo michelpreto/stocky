@@ -15,7 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       <div className="hidden lg:block">
-        <AppSidebar activeHref="/" />
+        <AppSidebar />
       </div>
       <div className="flex flex-col flex-1 min-w-0">
         <DashboardHeader alertCount={criticalCount} />
