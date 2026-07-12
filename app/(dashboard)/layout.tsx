@@ -18,7 +18,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <AppSidebar />
       </div>
       <div className="flex flex-col flex-1 min-w-0">
-        <DashboardHeader alertCount={criticalCount} />
+        <DashboardHeader alertCount={criticalCount} userName={session.user.name} />
         <main className="flex-1 overflow-hidden">
           {children}
         </main>

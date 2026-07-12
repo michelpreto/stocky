@@ -48,19 +48,6 @@ export function AppSidebar() {
       {bottomNavItems.map((item) => (
         <NavIcon key={item.href} {...item} active={pathname === item.href} />
       ))}
-
-      <div className="flex-1" />
-
-      <div
-        title="Almoxarifado"
-        className="w-9 h-9 rounded-lg bg-surface-elevated border border-border flex items-center justify-center cursor-pointer hover:border-slate-600 transition-colors"
-      >
-        <span className="text-[8px] font-bold text-muted-foreground text-center leading-tight">ALM</span>
-      </div>
-
-      <div className="w-[30px] h-[30px] rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[11px] font-bold mt-1">
-        M
-      </div>
     </aside>
   )
 }

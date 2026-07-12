@@ -13,14 +13,17 @@ interface Props {
   title?: string
   breadcrumb?: string
   alertCount?: number
+  userName?: string | null
 }
 
 export function DashboardHeader({
   title = 'Dashboard',
   breadcrumb = 'Visão Geral',
   alertCount = 0,
+  userName,
 }: Props) {
   const [selected, setSelected] = useState<Warehouse>(mockWarehouses[0])
+  const initial = userName?.trim().charAt(0).toUpperCase() || '?'
 
   return (
     <header className="h-11 bg-card border-b border-border flex items-center px-4 gap-2.5 flex-shrink-0">
@@ -43,8 +46,11 @@ export function DashboardHeader({
         )}
       </div>
 
-      <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-[10px] font-bold">
-        M
+      <div
+        title={userName ?? undefined}
+        className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-[10px] font-bold"
+      >
+        {initial}
       </div>
 
       <LogoutButton />
