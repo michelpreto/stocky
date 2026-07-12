@@ -115,10 +115,10 @@ export default function RelatoriosPage() {
   }
 
   const kpiCards = [
-    { label: 'Valor Total Estoque', value: kpis ? currencyFormatter.format(kpis.valorEstoque) : null },
-    { label: 'Itens Cadastrados', value: kpis ? String(kpis.itensCadastrados) : null },
-    { label: 'Itens Abaixo Mínimo', value: kpis ? String(kpis.itensAbaixoMinimo) : null },
-    { label: 'Saídas Hoje', value: kpis ? String(kpis.saidasHoje) : null },
+    { label: 'Valor Total Estoque', value: kpis ? currencyFormatter.format(kpis.valorEstoque) : null, danger: false },
+    { label: 'Itens Cadastrados', value: kpis ? String(kpis.itensCadastrados) : null, danger: false },
+    { label: 'Itens Abaixo Mínimo', value: kpis ? String(kpis.itensAbaixoMinimo) : null, danger: !!kpis && kpis.itensAbaixoMinimo > 0 },
+    { label: 'Saídas Hoje', value: kpis ? String(kpis.saidasHoje) : null, danger: false },
   ]
 
   return (
@@ -137,10 +137,10 @@ export default function RelatoriosPage() {
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {kpiCards.map(card => (
             <div key={card.label} className="bg-card border border-border rounded-lg p-4 flex flex-col gap-1">
-              <span className="text-[11px] text-muted-foreground">{card.label}</span>
+              <span className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground">{card.label}</span>
               {loading || card.value === null
-                ? <Skeleton className="h-6 w-24 mt-1" />
-                : <span className="text-sm font-semibold text-foreground">{card.value}</span>
+                ? <Skeleton className="h-7 w-24 mt-1" />
+                : <span className={cn('text-2xl font-semibold font-mono tabular-nums', card.danger ? 'text-danger' : 'text-foreground')}>{card.value}</span>
               }
             </div>
           ))}
@@ -176,7 +176,7 @@ export default function RelatoriosPage() {
               ) : monthly.slice(-6).map(row => (
                 <tr key={row.month} className="border-t border-border hover:bg-surface-elevated transition-colors">
                   <td className="px-3 py-2 text-[12px] text-foreground">{row.month}</td>
-                  <td className="px-3 py-2 text-[12px] text-foreground">{row.unidades.toLocaleString('pt-BR')}</td>
+                  <td className="px-3 py-2 text-[12px] text-foreground font-mono tabular-nums">{row.unidades.toLocaleString('pt-BR')}</td>
                 </tr>
               ))}
             </tbody>
@@ -188,7 +188,7 @@ export default function RelatoriosPage() {
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-semibold text-foreground">Itens Críticos</h2>
-          {!loading && <span className="text-[11px] text-muted-foreground bg-danger/15 text-danger px-2 py-0.5 rounded-full">{critical.length}</span>}
+          {!loading && <span className="text-[11px] font-mono tabular-nums bg-danger/15 text-danger px-2 py-0.5 rounded-full">{critical.length}</span>}
         </div>
         <div className="bg-card border border-border rounded-lg overflow-hidden">
           <table className="w-full">
@@ -225,9 +225,9 @@ export default function RelatoriosPage() {
               ) : critical.map(item => (
                 <tr key={item.id} className="border-t border-border hover:bg-surface-elevated transition-colors">
                   <td className="px-3 py-2 text-[12px] text-foreground max-w-[240px] truncate" title={item.nome}>{item.nome}</td>
-                  <td className="px-3 py-2 text-[12px] text-danger font-medium">{item.estoqueAtual}</td>
-                  <td className="px-3 py-2 text-[12px] text-foreground">{item.estoqueMinimo}</td>
-                  <td className="px-3 py-2 text-[12px] text-danger">{(item.estoqueMinimo - item.estoqueAtual).toFixed(2)}</td>
+                  <td className="px-3 py-2 text-[12px] text-danger font-medium font-mono tabular-nums">{item.estoqueAtual}</td>
+                  <td className="px-3 py-2 text-[12px] text-foreground font-mono tabular-nums">{item.estoqueMinimo}</td>
+                  <td className="px-3 py-2 text-[12px] text-danger font-medium font-mono tabular-nums">{(item.estoqueMinimo - item.estoqueAtual).toFixed(2)}</td>
                   <td className="px-3 py-2 text-[12px] text-muted-foreground">{item.unidade}</td>
                 </tr>
               ))}
@@ -281,7 +281,7 @@ export default function RelatoriosPage() {
                     </span>
                   </td>
                   <td className="px-3 py-2 text-[12px] text-foreground max-w-[200px] truncate" title={item.product.nome}>{item.product.nome}</td>
-                  <td className="px-3 py-2 text-[12px] text-foreground">{item.quantidade} {item.product.unidadeConsumo}</td>
+                  <td className="px-3 py-2 text-[12px] text-foreground font-mono tabular-nums">{item.quantidade} {item.product.unidadeConsumo}</td>
                   <td className="px-3 py-2 text-[12px] text-foreground">{item.warehouse.nome}</td>
                   <td className="px-3 py-2 text-[12px] text-foreground">{item.user.nome}</td>
                 </tr>
