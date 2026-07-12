@@ -2,7 +2,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { BarChart3, Package, ArrowLeftRight, AlertCircle, RefreshCw } from 'lucide-react'
+import Link from 'next/link'
+import { BarChart3, Package, ArrowLeftRight, AlertCircle, RefreshCw, ShoppingCart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface KPIs { valorEstoque: number; itensCadastrados: number; itensAbaixoMinimo: number; saidasHoje: number }
@@ -200,22 +201,23 @@ export default function RelatoriosPage() {
                 <th scope="col" className="px-3 py-2 text-left text-[10px] uppercase tracking-widest font-semibold text-muted-foreground">Mínimo</th>
                 <th scope="col" className="px-3 py-2 text-left text-[10px] uppercase tracking-widest font-semibold text-muted-foreground">Déficit</th>
                 <th scope="col" className="px-3 py-2 text-left text-[10px] uppercase tracking-widest font-semibold text-muted-foreground">Unidade</th>
+                <th scope="col" className="px-3 py-2 text-left text-[10px] uppercase tracking-widest font-semibold text-muted-foreground">Ação</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 Array.from({ length: 4 }).map((_, i) => (
                   <tr key={i} className="border-t border-border">
-                    {Array.from({ length: 5 }).map((_, j) => (
+                    {Array.from({ length: 6 }).map((_, j) => (
                       <td key={j} className="px-3 py-2"><Skeleton className="h-4 w-full" /></td>
                     ))}
                   </tr>
                 ))
               ) : criticalError ? (
-                <ErrorRow colSpan={5} onRetry={loadCritical} />
+                <ErrorRow colSpan={6} onRetry={loadCritical} />
               ) : critical.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-3 py-8 text-center">
+                  <td colSpan={6} className="px-3 py-8 text-center">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <Package className="w-6 h-6 opacity-30" />
                       <span className="text-[12px]">Nenhum item abaixo do mínimo</span>
@@ -229,6 +231,16 @@ export default function RelatoriosPage() {
                   <td className="px-3 py-2 text-[12px] text-foreground font-mono tabular-nums">{item.estoqueMinimo}</td>
                   <td className="px-3 py-2 text-[12px] text-danger font-medium font-mono tabular-nums">{(item.estoqueMinimo - item.estoqueAtual).toFixed(2)}</td>
                   <td className="px-3 py-2 text-[12px] text-muted-foreground">{item.unidade}</td>
+                  <td className="px-3 py-2">
+                    <Link
+                      href={`/compras?productId=${item.id}`}
+                      aria-label={`Comprar ${item.nome}`}
+                      className="h-7 px-2.5 rounded-lg border border-border text-[11px] text-foreground hover:border-slate-600 hover:bg-surface-elevated transition-colors cursor-pointer inline-flex items-center gap-1.5"
+                    >
+                      <ShoppingCart className="w-3 h-3" />
+                      Comprar
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

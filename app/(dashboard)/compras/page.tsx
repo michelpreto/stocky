@@ -1,7 +1,8 @@
 // app/(dashboard)/compras/page.tsx
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Plus, Search, ShoppingBag, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet'
 
@@ -20,6 +21,15 @@ interface EntradaItem {
 interface Product { id: string; nome: string }
 
 export default function ComprasPage() {
+  return (
+    <Suspense fallback={null}>
+      <ComprasContent />
+    </Suspense>
+  )
+}
+
+function ComprasContent() {
+  const searchParams = useSearchParams()
   const [items, setItems] = useState<EntradaItem[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -49,7 +59,7 @@ export default function ComprasPage() {
 
   useEffect(() => { load() }, [load])
 
-  async function openSheet() {
+  const openSheet = useCallback(async (preselectProductId?: string) => {
     setSaveError(null)
     setSheetOpen(true)
     const [prods, wh] = await Promise.all([
@@ -58,8 +68,14 @@ export default function ComprasPage() {
     ])
     setProdutos(prods)
     setDefaultWarehouse(wh)
-    setForm({ productId: '', warehouseId: wh?.id ?? '', quantidade: '', observacao: '' })
-  }
+    setForm({ productId: preselectProductId ?? '', warehouseId: wh?.id ?? '', quantidade: '', observacao: '' })
+  }, [])
+
+  useEffect(() => {
+    const preselectProductId = searchParams.get('productId')
+    if (preselectProductId) openSheet(preselectProductId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function handleSave() {
     setSaveError(null)
@@ -105,7 +121,7 @@ export default function ComprasPage() {
           <h1 className="text-sm font-semibold text-foreground">Entradas de Estoque</h1>
           <span className="text-[11px] text-muted-foreground bg-surface-elevated px-2 py-0.5 rounded-full">{total}</span>
         </div>
-        <button onClick={openSheet} className="h-8 px-3 rounded-lg bg-primary text-primary-foreground text-[12px] font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-1.5">
+        <button onClick={() => openSheet()} className="h-8 px-3 rounded-lg bg-primary text-primary-foreground text-[12px] font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-1.5">
           <Plus className="w-3.5 h-3.5" />
           Registrar Entrada
         </button>
