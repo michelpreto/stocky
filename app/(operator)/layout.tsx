@@ -1,6 +1,7 @@
 // app/(operator)/layout.tsx
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
+import { LogoutButton } from '@/components/LogoutButton'
 
 export default async function OperatorLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -17,8 +18,11 @@ export default async function OperatorLayout({ children }: { children: React.Rea
           </div>
           <span className="text-sm font-bold text-foreground">Baixa Rápida</span>
         </div>
-        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-600 to-purple-500 flex items-center justify-center text-white text-[10px] font-bold">
-          M
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[10px] font-bold">
+            M
+          </div>
+          <LogoutButton />
         </div>
       </header>
       {/* Main */}

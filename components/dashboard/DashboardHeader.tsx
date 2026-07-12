@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import { Bell } from 'lucide-react'
 import { WarehouseSelector } from './WarehouseSelector'
+import { LogoutButton } from '@/components/LogoutButton'
 import { mockWarehouses } from '@/lib/mock-data/dashboard'
 import type { Warehouse } from '@/types/dashboard'
 
@@ -40,9 +41,11 @@ export function DashboardHeader({
         )}
       </div>
 
-      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-purple-500 flex items-center justify-center text-white text-[10px] font-bold cursor-pointer">
+      <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-[10px] font-bold">
         M
       </div>
+
+      <LogoutButton />
     </header>
   )
 }
